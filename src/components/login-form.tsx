@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from 'js-cookie';
+import { useUser } from "@/context/UserContext";
 
 
 const loginSchema = z.object({
@@ -23,6 +23,7 @@ type LoginData = z.infer<typeof loginSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const { setUser } = useUser();
 
   const {
     register,
@@ -41,15 +42,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           password: values.password,
         }
       });
+      const userData = {
+        token: data.data.token,
+        uuid: data.data.uuid,
+        username: data.data.username,
+        honereeName: data.data.honereeName,
+        eventType: data.data.eventType,
+        eventDate: data.data.eventDate,
+        eventDeadLine: data.data.eventDeadLine,
+      };
 
       // Supón que el token viene en data.token
-      Cookies.set('token', data.token, { expires: 7 }); // 7 días
-
+      // El token está en data.data.token
+      Cookies.set("token", data.data.token, { expires: 7 });
+      setUser(userData);
       router.push('/dashboard');
+
     } catch (error: any) {
       setError('root', {
         type: 'manual',
-        message: 'Credenciales inválidos. Por favor, inténtalo de nuevo.',
+        message: error.message ||'Credenciales inválidos. Por favor, inténtalo de nuevo.',
       });
     }
   };
