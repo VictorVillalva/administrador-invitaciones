@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { UserProvider } from "@/context/UserContext";
 import "./globals.css";
+import { Citrus } from "lucide-react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,6 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logos/Logo-DanielMedel.jpg" />
+      </head>
       <body className={`${inter.variable} antialiased`}>
         <UserProvider>
           {children}

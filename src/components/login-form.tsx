@@ -15,7 +15,7 @@ import { useUser } from "@/context/UserContext";
 
 
 const loginSchema = z.object({
-  username: z.string().email(),
+  username: z.string().min(3, "El nombre de usuario debe tener al menos 3 caracteres"),
   password: z.string().min(4),
 })
 
@@ -36,7 +36,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   const onSubmit = async (values: LoginData) => {
     try {
-      const { data } = await axios.post("http://localhost:8080/invitation/sign-in", {
+      const urlBase = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const { data } = await axios.post(`${urlBase}/api/invitation/sign-in`, {
         credentials: {
           username: values.username,
           password: values.password,
@@ -55,7 +56,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       // Supón que el token viene en data.token
       // El token está en data.data.token
       Cookies.set("token", data.data.token, { expires: 7 });
-      setUser(userData);
+      localStorage.setItem('userData', JSON.stringify(userData));
+      setUser(userData); // También en contexto para el uso inmediato
       router.push('/dashboard');
 
     } catch (error: any) {
@@ -86,11 +88,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email">Correo electronico</Label>
+              <Label htmlFor="email">Usuario</Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="correo@example.com"
+                type="text"
+                placeholder="Nombre de usuario"
                 {...register("username")}
                 required
               />

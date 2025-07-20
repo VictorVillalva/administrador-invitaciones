@@ -55,6 +55,7 @@ export function NavUser({
 
   const handleLogout = () => {
     Cookies.remove('token')        // Borra la cookie del token
+    localStorage.removeItem('userData');
     router.push('/login')          // Redirige a login
   }
 
@@ -74,9 +75,9 @@ export function NavUser({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.honereeName}</span>
-                <span className="text-muted-foreground truncate text-xs">
+                {/* <span className="text-muted-foreground truncate text-xs">
                   {user.username}
-                </span>
+                </span> */}
               </div>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -94,9 +95,9 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.honereeName}</span>
-                  <span className="text-muted-foreground truncate text-xs">
+                  {/* <span className="text-muted-foreground truncate text-xs">
                     {user.username}
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </DropdownMenuLabel>

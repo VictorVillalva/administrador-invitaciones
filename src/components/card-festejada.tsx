@@ -1,8 +1,5 @@
 'use client'
 import bgImage from "@/assets/images/DanielaMedelXV/bg-blue-flowers.jpg"
-import Image from 'next/image'
-import flowerLeft from "@/assets/images/DanielaMedelXV/bg-pase.png"
-import flowerRight from "@/assets/images/DanielaMedelXV/bg-pase.png"
 import { useEffect, useState } from "react";
 
 export default function CardFestejada() {
@@ -43,7 +40,7 @@ export default function CardFestejada() {
                 style={{ backgroundImage: `url(${bgImage.src})` }}
             />
             {/* <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `url(${bgImage.src})` }}></div> */}
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col justify-center items-center gap-8 h-full">
                 <div className="flex flex-col text-center">
                     <p className="text-4xl font-bold">Daniela Medel Muñiz</p>
                 </div>

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Citrus, ClipboardList } from "lucide-react"
 import { useUser } from "@/context/UserContext";
+import { useUserData } from "@/hooks/useProvider"
 
 const data = {
   user: {
@@ -133,7 +134,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
+  const user = useUserData();
 
   const sidebarUser = user
     ? {

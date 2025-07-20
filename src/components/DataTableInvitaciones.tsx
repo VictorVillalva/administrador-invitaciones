@@ -38,79 +38,82 @@ import { Badge } from "./ui/badge"
 
 export type Invitado = {
   id: string
-  nombre: string
-  confirmacion: "Sí" | "No"
-  ninosConfirmados: number
-  adultosConfirmados: number
-  pasesConfirmados: number
-  mensaje: string
+  name: string
+  hasConfirmed: boolean
+  invitationQty: number
+  kidsNo: number
+  adultsNo: number
+  phoneNumber: string
+  message: string
 }
-
-const data: Invitado[] = [
-  {
-    id: "1",
-    nombre: "Carlos Mendoza",
-    confirmacion: "Sí",
-    ninosConfirmados: 2,
-    adultosConfirmados: 4,
-    pasesConfirmados: 6,
-    mensaje: "¡Felicidades! Nos vemos pronto.",
-  },
-  {
-    id: "2",
-    nombre: "Ana López",
-    confirmacion: "No",
-    ninosConfirmados: 0,
-    adultosConfirmados: 1,
-    pasesConfirmados: 1,
-    mensaje: "",
-  },
-  // ...agrega más invitados
-]
 
 export const columns: ColumnDef<Invitado>[] = [
   {
-    accessorKey: "nombre",
+    accessorKey: "name",
     header: "Nombre",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("nombre")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "confirmacion",
+    accessorKey: "hasConfirmed",
     header: "Confirmación",
+    cell: ({ row }) =>
+      row.getValue("hasConfirmed") ? (
+        <Badge variant="default" className="w-[60px]">Sí</Badge>
+      ) : (
+        <Badge variant="destructive" className="w-[60px]">No</Badge>
+      ),
+  },
+  {
+    accessorKey: "invitationQty",
+    header: "Número de invitados",
+  },
+  {
+    accessorKey: "kidsNo",
+    header: "Número de niños",
+  },
+  {
+    accessorKey: "adultsNo",
+    header: "Número de adultos",
+  },
+  {
+    id: "pasesConfirmados",
+    header: "Pases confirmados",
+    cell: ({ row }) => {
+      const kids = Number(row.getValue("kidsNo")) || 0
+      const adults = Number(row.getValue("adultsNo")) || 0
+      return (
+        <span className="font-semibold">{kids + adults}</span>
+      )
+    }
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Número de teléfono",
     cell: ({ row }) => (
-      <Badge variant={row.getValue("confirmacion") === "Sí" ? "default" : "destructive"} className="w-[60px]"> 
-        {row.getValue("confirmacion")}
-      </Badge>
+      <span className="tracking-wide">{row.getValue("phoneNumber")}</span>
     ),
   },
   {
-    accessorKey: "ninosConfirmados",
-    header: "Niños confirmados",
-  },
-  {
-    accessorKey: "adultosConfirmados",
-    header: "Adultos confirmados",
-  },
-  {
-    accessorKey: "pasesConfirmados",
-    header: "Pases confirmados",
-  },
-  {
-    accessorKey: "mensaje",
-    header: "Mensaje de felicitación",
+    accessorKey: "message",
+    header: "Mensaje",
     cell: ({ row }) => (
-      <span className="truncate max-w-[200px] block">{row.getValue("mensaje") || "-"}</span>
+      <span className="whitespace-pre-line break-words">
+        {row.getValue("message") || "-"}
+      </span>
     ),
   },
 ]
-export function DataTableInvitaciones() {
+
+export function DataTableInvitaciones({
+  data,
+}: {
+  data: Invitado[]
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
   const table = useReactTable({
     data,
     columns,
@@ -129,61 +132,34 @@ export function DataTableInvitaciones() {
       rowSelection,
     },
   })
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Buscar invitado..."
-          value={(table.getColumn("nombre")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("nombre")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Colu <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu> */}
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -219,8 +195,8 @@ export function DataTableInvitaciones() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} de{" "}
+          {table.getFilteredRowModel().rows.length} invitado(s) seleccionado(s).
         </div>
         <div className="space-x-2">
           <Button
