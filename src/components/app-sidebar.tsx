@@ -32,7 +32,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Citrus } from "lucide-react"
+import { Citrus, ClipboardList } from "lucide-react"
+import { useUser } from "@/context/UserContext";
+import { useUserData } from "@/hooks/useProvider"
 
 const data = {
   user: {
@@ -42,8 +44,8 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
-      url: "#",
+      title: "Lista de Invitaciones",
+      url: "/dashboard",
       icon: IconDashboard,
     },
   ],
@@ -132,6 +134,19 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = useUserData();
+
+  const sidebarUser = user
+    ? {
+      honereeName: user.honereeName,
+      username: user.username,
+    }
+    : {
+      honereeName: "Rabe Innovation",
+      username: "Rabe",
+    };
+
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -143,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <Citrus className="!size-5" />
-                <span className="text-base font-semibold">Loop Tech</span>
+                <span className="text-base font-semibold">Rabe Innovation</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -155,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={sidebarUser} />
       </SidebarFooter>
     </Sidebar>
   )

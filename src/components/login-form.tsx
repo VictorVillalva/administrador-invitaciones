@@ -8,23 +8,65 @@ import { Label } from "@/components/ui/label"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
+import { useUser } from "@/context/UserContext";
+
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  username: z.string().min(3, "El nombre de usuario debe tener al menos 3 caracteres"),
+  password: z.string().min(4),
 })
 
 type LoginData = z.infer<typeof loginSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const router = useRouter();
+  const { setUser } = useUser();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
-  const onSubmit = (data: LoginData) => {
-    console.log(data)
-  }
+  const onSubmit = async (values: LoginData) => {
+    try {
+      const urlBase = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const { data } = await axios.post(`${urlBase}/api/invitation/sign-in`, {
+        credentials: {
+          username: values.username,
+          password: values.password,
+        }
+      });
+      const userData = {
+        token: data.data.token,
+        uuid: data.data.uuid,
+        username: data.data.username,
+        honereeName: data.data.honereeName,
+        eventType: data.data.eventType,
+        eventDate: data.data.eventDate,
+        eventDeadLine: data.data.eventDeadLine,
+      };
+
+      // Supón que el token viene en data.token
+      // El token está en data.data.token
+      Cookies.set("token", data.data.token, { expires: 7 });
+      localStorage.setItem('userData', JSON.stringify(userData));
+      setUser(userData); // También en contexto para el uso inmediato
+      router.push('/dashboard');
+
+    } catch (error: any) {
+      setError('root', {
+        type: 'manual',
+        message: error.message ||'Credenciales inválidos. Por favor, inténtalo de nuevo.',
+      });
+    }
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -46,12 +88,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email">Correo electronico</Label>
+              <Label htmlFor="email">Usuario</Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="correo@example.com"
-                {...register("email")}
+                type="text"
+                placeholder="Nombre de usuario"
+                {...register("username")}
                 required
               />
             </div>
@@ -65,9 +107,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 required
               />
             </div>
-            {errors.password && <span>{errors.password.message}</span>}
+            {errors.root && (
+              <div className="text-red-600">{errors.root.message}</div>
+            )}
             <Button type="submit" className="w-full">
-              Entrar
+              {isSubmitting ? 'Ingresando...' : 'Ingresar'}
             </Button>
           </div>
         </div>

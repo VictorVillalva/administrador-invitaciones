@@ -11,10 +11,8 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
-        {children}
-      </body>
-    </html>
+    <section className={`${inter.variable} antialiased`}>
+      {children}
+    </section>
   );
 }
