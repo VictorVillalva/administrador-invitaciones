@@ -65,15 +65,15 @@ export const columns: ColumnDef<Invitado>[] = [
   },
   {
     accessorKey: "invitationQty",
-    header: "Número de invitados",
+    header: "No. invitados",
   },
   {
     accessorKey: "kidsNo",
-    header: "Número de niños",
+    header: "No. niños",
   },
   {
     accessorKey: "adultsNo",
-    header: "Número de adultos",
+    header: "No. adultos",
   },
   {
     id: "pasesConfirmados",
