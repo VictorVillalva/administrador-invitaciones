@@ -63,7 +63,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     } catch (error: any) {
       setError('root', {
         type: 'manual',
-        message: error.message ||'Credenciales inválidos. Por favor, inténtalo de nuevo.',
+        message: 'Credenciales inválidos. Por favor, inténtalo de nuevo.',
       });
     }
   };
