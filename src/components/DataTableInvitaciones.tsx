@@ -55,7 +55,17 @@ export const columns: ColumnDef<Invitado>[] = [
   },
   {
     accessorKey: "hasConfirmed",
-    header: "Confirmación",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Confirmación
+          <ArrowUpDown />
+        </Button>
+      )
+    },
     cell: ({ row }) =>
       row.getValue("hasConfirmed") ? (
         <Badge variant="default" className="w-[60px]">Sí</Badge>
